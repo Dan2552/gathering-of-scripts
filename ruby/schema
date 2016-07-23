@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+path = "#{Dir.pwd}/db"
+filepath = "#{path}/schema.rb"
+@contents = File.readlines(filepath)
+
+def too_complex(reason, status = 1)
+  puts "Schema: #{reason}"
+  exit status
+end
+
+def remove_line index
+  puts "removing line #{index+1}"
+  @contents = @contents[0...index] + @contents[index+1..-1]
+end
+
+def remove_conflict_lines
+  puts "removing conflict lines"
+  @contents = @contents.select do |line|
+    !line.start_with?("<<<<<<<") &&
+    !line.start_with?("=======") &&
+    !line.start_with?(">>>>>>>")
+  end
+end
+
+conflicts = []
+schema_lines = []
+@contents.each_with_index do |line, index|
+  conflicts << index if line.start_with? "<<<<<<<"
+  schema_lines << index if line.start_with? "ActiveRecord::Schema.define("
+end
+
+too_complex("No conflicts found", 0) if conflicts.count < 1
+too_complex("There is more than 1 conflict") if conflicts.count > 1
+too_complex("Can't find expected line") if schema_lines.count != 2
+too_complex("Too complex") if schema_lines[1] != (schema_lines[0] + 2)
+
+versions = schema_lines.map do |line|
+  @contents[line].match(/^.*version: (\d*)\) do.*$/)[1].to_i
+end
+
+if versions[1] > versions[0]
+  remove_line schema_lines[0]
+else
+  remove_line schema_lines[1]
+end
+
+remove_conflict_lines
+
+File.open(filepath, "w+") { |file| file.puts @contents }
+`git status`

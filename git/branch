@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+question() {
+  echo ""
+  echo $2
+  if [[ $3 == "" ]]; then
+    printf "> "
+  else
+    printf "(leave blank for $3)> "
+  fi
+  read response
+  if [[ $response == "" ]]; then
+    response="$3"
+  fi
+  echo ""
+  eval "$1='$response'"
+}
+
+question_if_empty() {
+  value=`echo ${!1}`
+  if [[ $value == "" ]]; then
+    question $1 "$2" "$3"
+  fi
+}
+
+fetch() {
+  git fetch > /dev/null 2>&1
+  if [[ $? != 0 ]]; then
+    echo "Something went wrong while fetching... How's your internet connection?"
+    exit 1
+  fi
+}
+
+reset() {
+  fetch
+  git add . -A
+  git reset --hard origin/$1 > /dev/null 2> /dev/null
+  if [[ $? == 0 ]]; then
+    echo "Using remote branch"
+  else
+    echo "Using local branch (no origin branch found)"
+  fi
+}
+
+reset_local() {
+  git add . -A
+  git reset --hard $1 > /dev/null
+}
+
+prompt_continue_anyway() {
+  question_if_empty continue "Continue anyway? Changes will be lost. (y|n):" "n"
+  if [[ $continue != "y" ]]; then
+    exit 1
+  fi
+}
+
+prompt_keep_local() {
+  question_if_empty remote "Continue anyway? Changes will be lost. (remote|local) :" "remote"
+  if [[ $remote != "remote" ]]; then
+    echo ""
+    echo "Using local branch (user specified)"
+    exit 0
+  fi
+}
+
+uncommited_changes() {
+  echo ""
+  echo "😱  You appear to have uncommited changes:"
+  echo ""
+  git status
+  prompt_continue_anyway
+}
+
+branches_diverged() {
+  echo ""
+  echo "😱  You appear to have a diverged branch:"
+  echo ""
+  git status
+  prompt_keep_local
+}
+
+detect_changes() {
+  if [[ $(git status | grep "to be committed") != "" ]]; then
+    uncommited_changes
+  else
+    if [[ $(git status | grep "for commit:") != "" ]]; then
+      uncommited_changes
+    else
+      if [[ $(git status | grep "Untracked files:") != "" ]]; then
+        uncommited_changes
+      fi
+    fi
+  fi
+}
+
+detect_ahead() {
+  if [[ $(git status | grep "can be fast-forwarded.") == "" ]]; then
+    if [[ $(git status | grep "is ahead of 'origin") != "" ]]; then
+      branches_diverged
+    else
+      if [[ $(git status | grep " have diverged") != "" ]]; then
+        branches_diverged
+      fi
+    fi
+  fi
+}
+
+prompt_branch() {
+  question_if_empty branch "Enter branch:" "master"
+}
+
+switch_branch() {
+  git checkout $1 > /dev/null 2> /dev/null
+  if [[ $? != 0 ]]; then
+    git checkout -b $1 > /dev/null 2> /dev/null
+    git branch --set-upstream-to=origin/$1 > /dev/null 2> /dev/null
+  fi
+  current_branch=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  if [[ $current_branch != $1 ]]; then
+    echo "Failed to switch branch to $1"
+    exit 1
+  fi
+}
+
+branch="$1"
+remote="$2"
+if [[ $branch == "" ]]; then
+  prompt_branch
+fi
+
+detect_changes
+reset_local
+switch_branch $branch
+detect_ahead
+reset $branch
+

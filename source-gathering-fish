@@ -1,0 +1,9 @@
+set script_dir (dirname (status --current-filename))
+
+set PATH $script_dir $PATH
+set PATH $script_dir/git $PATH
+set PATH $script_dir/github $PATH
+set PATH $script_dir/ios $PATH
+set PATH $script_dir/macos $PATH
+set PATH $script_dir/provisioning $PATH
+set PATH $script_dir/ruby $PATH

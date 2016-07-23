@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+target_branch = ARGV[0] || "develop"
+
+url = `git config --get remote.origin.url`.strip
+url.gsub!("git@", "https://")
+url.gsub!(":", "/")
+url.gsub!(".git", "")
+url.gsub!("https///", "https://")
+local_branch = `git rev-parse --abbrev-ref HEAD`
+url = "#{url}/compare/#{target_branch}...#{local_branch}"
+
+`open #{url}`

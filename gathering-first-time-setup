@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+script_dir=$( cd "$( dirname "$0" )" && pwd )
+source $script_dir/common-functions
+
+which update-gathering >/dev/null
+if was_successful; then
+  echo "Looks like gathering is already installed"
+  exit 1
+fi
+
+echo "Detecting shell..."
+cat /etc/shells | grep /bash
+if was_successful; then
+  echo ""
+  echo "bash is installed"
+  echo "- adding to ~/.bash_profile"
+  echo "source $script_dir/source-gathering-bash" >> ~/.bash_profile
+fi
+
+cat /etc/shells | grep /zsh
+if was_successful; then
+  echo ""
+  echo "zsh is installed"
+  echo "- adding to ~/.zshenv"
+  echo "source $script_dir/source-gathering-bash" >> ~/.zshenv
+fi
+
+cat /etc/shells | grep /fish
+if was_successful; then
+  echo ""
+  echo "fish is installed"
+  echo "- adding to ~/.config/fish/config.fish"
+  echo "source $script_dir/source-gathering-fish" >> ~/.config/fish/config.fish
+fi
+
+echo ""
+echo "Complete! Restart your shell to use the scripts."

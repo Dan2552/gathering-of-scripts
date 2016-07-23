@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+source common-functions
+
+if [[ $(which mysql.server) == "" ]]; then
+  brew_install_or_update homebrew/versions/mysql56
+  mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+  check_last "settings"
+fi
+
+if [[ $(launchctl list | grep [m]ysql) == "" ]]; then
+  successfully mkdir -p ~/Library/LaunchAgents
+  successfully ln -sfv /usr/local/opt/mysql56/*.plist ~/Library/LaunchAgents
+  successfully launchctl load ~/Library/LaunchAgents/homebrew.mxcl.mysql56.plist
+fi

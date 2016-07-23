@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+source common-functions
+
+brew_install_or_update chruby
+echo "source /usr/local/opt/chruby/share/chruby/chruby.sh" >> ~/.bash_profile
+check_last "set .bash_profile"
+echo "source /usr/local/opt/chruby/share/chruby/chruby.sh" >> ~/.zshenv
+check_last "set .zshenv"
+echo "source /usr/local/opt/chruby/share/chruby/auto.sh" >> ~/.bash_profile
+check_last "set .bash_profile"
+echo "source /usr/local/opt/chruby/share/chruby/auto.sh" >> ~/.zshenv
+check_last "set .zshenv"
+successfully source /usr/local/opt/chruby/share/chruby/chruby.sh
+
+brew_install_or_update ruby-install
+successfully ruby-install ruby 2.1.1
+
+mkdir $home_dir/.gem 2>/dev/null
+mkdir $home_dir/.gem/ruby 2>/dev/null
+mkdir $home_dir/.gem/ruby/2.1.1 2>/dev/null
+mkdir $home_dir/.gem/ruby/2.1.1/bin 2>/dev/null
+
+mkdir $home_dir/.rubies 2>/dev/null
+mkdir $home_dir/.rubies/ruby-2.1.1 2>/dev/null
+mkdir $home_dir/.rubies/ruby-2.1.1/lib 2>/dev/null
+mkdir $home_dir/.rubies/ruby-2.1.1/lib/ruby 2>/dev/null
+mkdir $home_dir/.rubies/ruby-2.1.1/lib/ruby/gems 2>/dev/null
+mkdir $home_dir/.rubies/ruby-2.1.1/lib/ruby/gems/2.1.0 2>/dev/null
+mkdir $home_dir/.rubies/ruby-2.1.1/lib/ruby/gems/2.1.0/bin 2>/dev/null

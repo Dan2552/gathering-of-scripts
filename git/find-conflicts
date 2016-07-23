@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+class ConflictFinder
+  def find_conflicts(path)
+    return if skip?(path)
+
+    text = File.read(path)
+
+    if conflicts_present?(text)
+      conflicts << path
+      true
+    end
+  rescue Exception => e
+    raise e if e.to_s != "invalid byte sequence in UTF-8"
+  end
+
+  def print_conflicts
+    if conflicts.count > 0
+      puts "Conflicts found:"
+    else
+      puts "No conflicts 🎉 "
+    end
+    conflicts.each { |c| puts "  #{c}" }
+  end
+
+  def conflicts
+    @conflicts ||= []
+  end
+
+  private
+
+  def conflicts_present?(text)
+    text =~ /^<<<<<<< \w*$/ ||
+      text =~ /^>>>>>>>$/ ||
+      text =~ /^=======$/
+  end
+
+  def skip?(path)
+    path.end_with?(".png") ||
+      path.end_with?(".gif") ||
+      path.end_with?(".jpg") ||
+      path.end_with?(".jpeg") ||
+      path.end_with?(".log") ||
+      path.end_with?(".pdf") ||
+      path.end_with?(".cache") ||
+      path.end_with?(".mp4") ||
+      path.end_with?(".ogv") ||
+      path.end_with?(".pkg") ||
+      path.end_with?(".ico") ||
+      path.start_with?("tmp/")
+  end
+end
+
+cf = ConflictFinder.new
+file_paths = Dir.glob("**/*").select { |path| File.file?(path) }
+file_paths.each { |path| cf.find_conflicts(path) }
+
+cf.print_conflicts
+
+exit(cf.conflicts.count)

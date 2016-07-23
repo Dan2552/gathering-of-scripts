@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+ensure_bundle() {
+  bundle check >/dev/null || bundle install || exit 1
+}
+
+parallel_prepare() {
+  bundle exec rake parallel:prepare >/dev/null || exit 1
+}

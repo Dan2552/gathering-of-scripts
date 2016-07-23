@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+
+current_dir=$( pwd )
+home_dir=$( cd ~ && pwd )
+script_dir=$( cd "$( dirname "$0" )" && pwd )
+log=""
+
+# usage: `if was_successful; then`
+was_successful() {
+  [[ $? == 0 ]]
+}
+
+# usage: `if was_not_successful; then`
+was_not_successful() {
+  [[ $? != 0 ]]
+}
+
+source_relative() {
+  source $script_dir/$*
+}
+
+execute() {
+  retry 1 $*
+}
+
+execute_verbose() {
+  local cmd="$*"
+  $cmd
+  status_code="$?"
+  if [[ $status_code != 0 ]]; then
+    exit 1
+  else
+    echo ✅
+  fi
+}
+
+retry() {
+  local n=0
+  local try=$1
+  local silent=$2
+
+  if [[ $silent == "silent" ]]; then
+    local cmd="${@: 3}"
+  else
+    local cmd="${@: 2}"
+  fi
+
+  until [[ $n -ge $try ]]
+  do
+    $cmd > /tmp/common-retry.log 2> /tmp/common-retry.log &
+    pid=$!
+
+    spin='🌑🌒🌓🌔🌕🌖🌗🌘'
+    i=0
+
+    while kill -0 $pid 2>/dev/null
+    do
+      i=$(( (i+1) %8 ))
+      printf "\r${spin:$i:1}  ${cmd:0:$[$(tput cols)-4]} "
+      sleep .1
+    done
+    printf "\r"
+
+    wait $pid
+
+    status_code="$?"
+    if [[ $status_code == 0 ]]; then
+      if [[ $silent == "silent" ]]; then
+        printf "\r\033[K"
+      else
+        log_echo "✅  ${cmd:0:$[$(tput cols)-4]}"
+      fi
+      break
+    else
+      printf "\r\033[K"
+      ((n++))
+      if [[ $n -ge $try ]]; then
+        log_echo "⚠️️  $cmd"
+        log_echo "💥  failed with status $status_code 💥"
+        question print_error "Print error? (y|n)" "n"
+        if [[ $print_error == "y" ]]; then
+
+          clear
+          echo "-------"
+          cat /tmp/common-retry.log
+          echo "-------"
+        fi
+        exit 1
+      fi
+      echo "retrying... $n"
+      sleep 1;
+    fi
+  done
+}
+
+question() {
+  echo ""
+  echo "⚠️️  $2"
+  if [[ $3 == "" ]]; then
+    printf "> "
+  else
+    printf "(leave blank for $3)> "
+  fi
+  if [[ $4 == "password" ]]; then
+    read -s response
+  else
+    read response
+  fi
+  if [[ $response == "" ]]; then
+    response="$3"
+  fi
+  echo ""
+  eval "$1='$response'"
+}
+
+question_if_empty() {
+  value=`echo ${!1}`
+  if [[ $value == "" ]]; then
+    question $1 "$2" "$3" $4
+  fi
+}
+
+successfully() {
+  log_echo "🐾  $1 $2 $3 …"
+  $*
+  if [[ $? != 0 ]]; then
+    echo ⛔️
+    exit 1
+  fi
+}
+
+check_last() {
+  echo "🐾  $*"
+  if [[ $? != 0 ]]; then
+    echo ⛔️
+    exit 1
+  fi
+}
+
+heading() {
+  real_clear
+  log_echo
+  log_echo "- $*"
+}
+
+log_echo() {
+  if [[ $CLEAR_SCREEN_BETWEEN_LOGS == "true" ]]; then
+    log="$log
+  $*"
+    real_clear
+  else
+    echo "$*"
+  fi
+}
+
+real_clear() {
+  printf "\033c"
+  echo "$log"
+}
+
+ensure_var() {
+  if [[ $2 == "" ]]; then
+    echo "Environment variable required $1"
+    exit 1
+  fi
+}
+
+capitalize() {
+  cap_first="$(echo ${1:0:1} | tr '[a-z]' '[A-Z]')"
+  cap_rest="${1:1}"
+  echo $cap_first$cap_rest
+}
+
+brew_install_or_update() {
+  echo "🐾  brew upgrade $*"
+  brew upgrade $*
+  if [[ $? != 0 ]]; then
+    successfully brew install $*
+  fi
+}
+
+check_sudo() {
+  echo "Testing sudo, you may need to enter your password:"
+  sudo echo "✅  sudo is good"
+    if [[ $? != 0 ]]; then
+    echo "💥  sudo auth failed"
+    exit 1
+  fi
+}

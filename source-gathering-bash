@@ -1,0 +1,9 @@
+script_dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+export PATH="$script_dir:$PATH"
+export PATH="$script_dir/git:$PATH"
+export PATH="$script_dir/github:$PATH"
+export PATH="$script_dir/ios:$PATH"
+export PATH="$script_dir/macos:$PATH"
+export PATH="$script_dir/provisioning:$PATH"
+export PATH="$script_dir/ruby:$PATH"

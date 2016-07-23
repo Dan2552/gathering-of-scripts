@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# set_keychain_password [account-name] [username] [password]
+set_keychain_password() {
+  security add-generic-password -s $1 -a "$2" -w "$3" -U
+}
+
+# get_keychain_password [account-name]
+# STDOUT => [password]
+get_keychain_password() {
+  security find-generic-password -gs $1 2>&1 >/dev/null | ruby -e 'print $1 if STDIN.gets =~ /^password: "(.*)"$/'
+}
+
+# get_keychain_password [account-name]
+# STDOUT => [username]
+get_keychain_username() {
+  security find-generic-password -gs $1 2>/dev/null | grep '"acct"' | grep '=' | ruby -e 'print $1 if STDIN.gets =~ /"acct".*="(.*)"$/'
+}

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+check_net() {
+  ping -c 1 -t 1 google.co.uk >/dev/null 2>/dev/null
+  if [[ $? > 0 ]]; then
+    echo "internet doesn't seem ok"
+    networksetup -setairportpower en0 off
+    sleep 3
+    networksetup -setairportpower en0 on
+    sleep 15
+    check_net
+  else
+    echo "internet connection is ok 👍"
+  fi
+}
+
+while :
+do
+  check_net
+  if [[ $1 != 'forever' ]]; then
+    exit 0
+  fi
+  sleep 5
+done

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+url = `git config --get remote.origin.url`.strip
+url.gsub!("git@", "https://")
+url.gsub!(":", "/")
+url.gsub!(".git", "")
+url.gsub!("https///", "https://")
+url = "#{url}/pulls"
+
+`open #{url}`

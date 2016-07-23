@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source common-functions
+
+retry 10 rm -rf ~/library/Developer/Xcode/DerivedData

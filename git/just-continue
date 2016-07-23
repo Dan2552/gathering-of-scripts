@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+source common-functions
+
+# The idea of this script is to save some thinking when rebasing, cherry-picking
+# or whatever else. We don't really care what state as long as we "continue"!
+# 3 different states that you can be in Git to continue from:
+
+  # On branch feature/gp_portal
+  # Your branch is up-to-date with 'origin/feature/gp_portal'.
+  # All conflicts fixed but you are still merging.
+  #   (use "git commit" to conclude merge)
+
+  # On branch free-text-prescription
+  # You are currently cherry-picking commit 4515dc1.
+  #   (all conflicts fixed: run "git cherry-pick --continue")
+  #   (use "git cherry-pick --abort" to cancel the cherry-pick operation)
+
+  # You are currently rebasing branch 'eye' on '6bead7c'.
+  #   (fix conflicts and then run "git rebase --continue")
+  #   (use "git rebase --skip" to skip this patch)
+  #   (use "git rebase --abort" to check out the original branch)
+
+if [[ -f $current_dir/db/schema.rb ]]; then
+  schema
+  status_code="$?"
+  if [[ $status_code != 0 ]]; then
+    exit $status_code
+  fi
+fi
+
+find-conflicts
+status_code="$?"
+if [[ $status_code != 0 ]]; then
+  exit $status_code
+fi
+
+git add .
+
+if [[ $(git status | grep "All conflicts fixed but you are still merging") != "" ]]; then
+  git commit
+  exit $?
+fi
+
+if [[ $(git status | grep "You are currently cherry-picking") != "" ]]; then
+  git cherry-pick --continue
+  exit $?
+fi
+
+if [[ $(git status | grep "You are currently rebasing") != "" ]]; then
+  git rebase --continue
+  exit $?
+fi
+
+if [[ $(git status | grep "You are currently reverting") != "" ]]; then
+  git revert --continue
+  exit $?
+fi
