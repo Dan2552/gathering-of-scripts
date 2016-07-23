@@ -1,0 +1,18 @@
+provisioning_profile() {
+  prov_profile_name="$*"
+  prov_profile=$(grep "$*" ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision | perl -n -e'/^.*Profiles\/(.*).mobileprovision.*$/ && print $1')
+}
+
+provisioning_profile_validation() {
+  if [[ $prov_profile == "" ]]; then
+    log_echo "💥  NO PROVISIONING PROFILE FOUND ($prov_profile_name) 💥"
+    exit 1
+  else
+    if [[ ${#prov_profile} != 36 ]]; then
+      log_echo "💥   Provisioning profile invalid. You may have duplicates, try clearing your profiles (~/Library/MobileDevice/Provisioning\ Profiles/) and refreshing your profiles in Xcode.   💥"
+      exit 1
+    else
+      log_echo "Provisioning profile: $prov_profile ($prov_profile_name) ✅"
+    fi
+  fi
+}
