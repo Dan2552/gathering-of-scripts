@@ -155,6 +155,7 @@ log_echo() {
 
 real_clear() {
   printf "\033c"
+  clear
   echo "$log"
 }
 
