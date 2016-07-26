@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+git rebase --abort 2> /dev/null
+git cherry-pick --abort 2> /dev/null
+git merge --abort 2> /dev/null
+git status
