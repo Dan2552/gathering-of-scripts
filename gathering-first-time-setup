@@ -10,7 +10,7 @@ if was_successful; then
 fi
 
 echo "Detecting shell..."
-cat /etc/shells | grep /bash
+cat /etc/shells | grep /bash >/dev/null
 if was_successful; then
   echo ""
   echo "bash is installed"
@@ -18,7 +18,7 @@ if was_successful; then
   echo "source $script_dir/source-gathering-bash" >> ~/.bash_profile
 fi
 
-cat /etc/shells | grep /zsh
+cat /etc/shells | grep /zsh >/dev/null
 if was_successful; then
   echo ""
   echo "zsh is installed"
@@ -26,7 +26,7 @@ if was_successful; then
   echo "source $script_dir/source-gathering-bash" >> ~/.zshenv
 fi
 
-cat /etc/shells | grep /fish
+cat /etc/shells | grep /fish >/dev/null
 if was_successful; then
   echo ""
   echo "fish is installed"
