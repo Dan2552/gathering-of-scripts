@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+source common-functions
+
+check_sudo
+
 sudo mkdir -p /usr/local
 sudo mkdir -p /Library/Caches/Homebrew
 sudo chown -R `whoami` /usr/local
@@ -12,5 +16,6 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 defaults write NSGlobalDomain KeyRepeat -int 0
 defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automatic Display Enabled" -bool false
 
-brew update
-brew doctor
+brew update && brew doctor
+
+cat .bundle/config
