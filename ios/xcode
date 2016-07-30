@@ -5,12 +5,14 @@ source common-ruby
 
 clean-derived-data || exit 1
 
-ls ./Gemfile >/dev/null 2> /dev/null
+ls ./Ambientfile >/dev/null 2> /dev/null
 if was_successful; then
-  ensure_bundle
-  retry 2 bundle exec pod install --no-repo-update || exit 1
-else
-  retry 2 pod install --no-repo-update || exit 1
+  retry 1 bundle_exec_if_gemfile ambient || exit 1
+fi
+
+ls ./Podfile >/dev/null 2> /dev/null
+if was_successful; then
+  retry 1 bundle_exec_if_gemfile pod install --no-repo-update || exit 1
 fi
 
 if [[ -d /Applications/Xcode.app/ ]]; then

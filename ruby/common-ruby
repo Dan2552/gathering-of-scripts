@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
 
+source common-functions
+
 ensure_bundle() {
   bundle check >/dev/null || bundle install || exit 1
 }
 
 parallel_prepare() {
   bundle exec rake parallel:prepare >/dev/null || exit 1
+}
+
+bundle_exec_if_gemfile() {
+  ls ./Gemfile >/dev/null 2> /dev/null
+  if was_successful; then
+    ensure_bundle
+    bundle exec $*
+  else
+     $*
+  fi
 }
