@@ -15,6 +15,11 @@ if was_successful; then
   retry 1 bundle_exec_if_gemfile pod install --no-repo-update || exit 1
 fi
 
+ls ./Cartfile >/dev/null 2> /dev/null
+if was_successful; then
+  retry 1 carthage update || exit 1
+fi
+
 if [[ -d /Applications/Xcode.app/ ]]; then
   retry 1 open *.xcworkspace -a /Applications/Xcode.app
 else
