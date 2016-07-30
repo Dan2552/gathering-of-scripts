@@ -13,4 +13,8 @@ else
   retry 2 pod install --no-repo-update || exit 1
 fi
 
-retry 1 open *.xcworkspace
+if [[ -d /Applications/Xcode.app/ ]]; then
+  retry 1 open *.xcworkspace -a /Applications/Xcode.app
+else
+  retry 1 open *.xcworkspace
+fi
