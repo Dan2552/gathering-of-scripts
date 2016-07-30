@@ -44,6 +44,7 @@ iOS
 macOS
 - **`keychain-functions`** - to source for simple functions for reading and writing logins within Keychain
 - **`wifi`** - For when turning your WiFi off and on again helps resolve your connection issues. Run `wifi forever` to continously check and resolve your connection.
+- **`fresh-kill`** - Kills every running app except Finder and Terminal. Useful for when you've simply got too many things open.
 
 Bash scripting (`source common-functions`)
 - **`retry`**
