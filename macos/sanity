@@ -19,3 +19,6 @@ defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automati
 brew update && brew doctor
 
 cat .bundle/config
+
+#TODO add this in:
+# https://www.quernus.co.uk/2015/10/22/force-git-to-use-ssh/
