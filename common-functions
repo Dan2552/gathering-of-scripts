@@ -137,6 +137,10 @@ check_last() {
   fi
 }
 
+warn() {
+  echo "⚠️️  $*"
+}
+
 heading() {
   real_clear
   log_echo

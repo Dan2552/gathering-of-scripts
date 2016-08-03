@@ -4,21 +4,27 @@ source common-functions
 
 check_sudo
 
-sudo mkdir -p /usr/local
-sudo mkdir -p /Library/Caches/Homebrew
-sudo chown -R `whoami` /usr/local
-sudo chown -R `whoami` /Library/Caches/Homebrew
+execute sudo mkdir -p /usr/local
+execute sudo mkdir -p /Library/Caches/Homebrew
+execute sudo chown -R `whoami` /usr/local
+execute sudo chown -R `whoami` /Library/Caches/Homebrew
 
-git config --global credential.helper "osxkeychain"
-git config --global push.default "current"
+execute git config --global credential.helper "osxkeychain"
+execute git config --global push.default "current"
 
-defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
-defaults write NSGlobalDomain KeyRepeat -int 0
-defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automatic Display Enabled" -bool false
+execute defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
+execute defaults write NSGlobalDomain KeyRepeat -int 0
 
-brew update && brew doctor
+execute brew update
+execute brew doctor
 
-cat .bundle/config
+execute wifi
+
+ls .bundle/config >/dev/null 2>&1
+if was_successful; then
+  warn ".bundle/config exists"
+fi
+
 
 #TODO add this in:
 # https://www.quernus.co.uk/2015/10/22/force-git-to-use-ssh/
