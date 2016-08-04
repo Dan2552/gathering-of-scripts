@@ -7,17 +7,17 @@ clean-derived-data || exit 1
 
 ls ./Ambientfile >/dev/null 2> /dev/null
 if was_successful; then
-  retry 1 bundle_exec_if_gemfile ambient || exit 1
+  retry 1 bundle_exec_if_gemfile ambient
 fi
 
 ls ./Podfile >/dev/null 2> /dev/null
 if was_successful; then
-  retry 1 bundle_exec_if_gemfile pod check || bundle_exec_if_gemfile pod install --no-repo-update || exit 1
+  bundle_exec_if_gemfile pod check >/dev/null 2>&1 || retry 1 bundle_exec_if_gemfile pod install --no-repo-update
 fi
 
 ls ./Cartfile >/dev/null 2> /dev/null
 if was_successful; then
-  retry 1 carthage update || exit 1
+  retry 1 carthage update
 fi
 
 if [[ -d /Applications/Xcode.app/ ]]; then
