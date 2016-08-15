@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
+ping_func(){
+    results=$(ping -c 1 -t 1 google.co.uk >/dev/null 2>/dev/null)
+    return $?
+}
+
 check_net() {
-  ping -c 1 -t 1 google.co.uk >/dev/null 2>/dev/null
+  ping_func
   if [[ $? > 0 ]]; then
     echo "internet doesn't seem ok"
     networksetup -setairportpower en0 off
