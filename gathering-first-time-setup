@@ -22,8 +22,8 @@ cat /etc/shells | grep /zsh >/dev/null
 if was_successful; then
   echo ""
   echo "zsh is installed"
-  echo "- adding to ~/.zshenv"
-  echo "source $script_dir/source-gathering-bash" >> ~/.zshenv
+  echo "- adding to ~/.zshrc"
+  echo "source $script_dir/source-gathering-bash" >> ~/.zshrc
 fi
 
 cat /etc/shells | grep /fish >/dev/null
