@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+action = ARGV.first
+
+system("setup-npm")
+
+all_files = Dir.entries(".")
+workspace = all_files.select { |d| d.end_with?(".xcworkspace") }.first
+project = all_files.select { |d| d.end_with?(".xcodeproj") }.first
+file = workspace || project
+project_name = file.split(".").first
+
+if action == "simulator"
+  puts "Building #{project_name} (#{file}) for simulator"
+  system("xcodebuild -workspace #{file} -derivedDataPath /tmp/build-ios -scheme #{project_name} -destination 'platform=iOS Simulator,name=iPhone 5s,OS=9.3' build")
+  system("source common-ios; launch_ios_sim '/tmp/build-ios/Build/Products/Debug-iphonesimulator/#{project_name}.app' --devicetypeid 'iPhone-5, 9.3'")
+end
+
+

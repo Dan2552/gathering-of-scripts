@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+source common-functions
+
+silent_which npm
+if was_not_successful; then
+  brew_install_or_update npm
+fi
+

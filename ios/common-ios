@@ -1,6 +1,20 @@
+#!/usr/bin/env bash
+
+source common-functions
+
 provisioning_profile() {
   prov_profile_name="$*"
   prov_profile=$(grep "$*" ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision | perl -n -e'/^.*Profiles\/(.*).mobileprovision.*$/ && print $1')
+}
+
+launch_ios_sim() {
+  silent_which ios-sim
+  if was_not_successful; then
+    setup-npm
+    npm install ios-sim -g
+  fi
+
+  ios-sim launch $*
 }
 
 provisioning_profile_validation() {
