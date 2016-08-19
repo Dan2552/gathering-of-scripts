@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-echo (curl http://wtfismyip.com/text 2> /dev/null)
+echo $(curl http://wtfismyip.com/text 2> /dev/null)
 ifconfig | grep inet | grep broadcast | awk '{print $2}'
