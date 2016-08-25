@@ -9,6 +9,7 @@ check_net() {
   networksetup -setairportpower en0 off
   ping_func
   if [[ $? > 0 ]]; then
+    echo "internet doesn't seem ok"
     sleep 3
     check_net
   else
