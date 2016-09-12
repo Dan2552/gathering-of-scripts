@@ -17,7 +17,7 @@ fi
 
 ls ./Cartfile >/dev/null 2> /dev/null
 if was_successful; then
-  retry 1 carthage update
+  echo "There is a Cartfile. Be sure to run `carthage update`"
 fi
 
 if [[ -d /Applications/Xcode.app/ ]]; then
