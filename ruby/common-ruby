@@ -3,7 +3,7 @@
 source common-functions
 
 ensure_bundle() {
-  which bundle >/dev/null 2>&1 || gem install bundler || exit 1
+  which bundle >/dev/null 2>&1 || gem install bundler || (echo "installing bundle gem failed" && exit 1)
   bundle check >/dev/null || bundle install || exit 1
 }
 
