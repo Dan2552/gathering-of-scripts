@@ -3,8 +3,8 @@
 require "mechanize"
 
 if ARGV.size != 3
-  puts %q{Usage: ruby xcode.rb USERNAME PASSWORD VERSION}
-  puts %q{Example: ruby xcode.rb myusername@apple.com 123456 7.1 }
+  puts %q{Usage: download-xcode USERNAME PASSWORD VERSION}
+  puts %q{Example: download-xcode myusername@apple.com 123456 7.1 }
   exit
 end
 
@@ -18,7 +18,7 @@ a = Mechanize.new { |agent|
 }
 
 a.get('https://developer.apple.com/') do |page|
-  member_page = a.click(page.link_with(:text => /Member Center/))
+  member_page = a.click(page.link_with(:text => /Account/))
 
   form = member_page.forms.first
   form.field_with(id: "accountname").value = username
