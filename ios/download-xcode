@@ -1,16 +1,18 @@
 #!/usr/bin/env ruby
 
 require "mechanize"
+require_relative "../ruby/auth"
 
-if ARGV.size != 3
-  puts %q{Usage: download-xcode USERNAME PASSWORD VERSION}
-  puts %q{Example: download-xcode myusername@apple.com 123456 7.1 }
+if ARGV.size != 1
+  puts %q{Usage: download-xcode VERSION}
+  puts %q{Example: download-xcode 7.1 }
   exit
 end
 
-username = ARGV[0]
-password = ARGV[1]
-version = ARGV[2]
+login = Auth.new("developer.apple.com").find_or_create
+username = login.account
+password = login.password
+version = ARGV[0]
 target = "https://developer.apple.com/services-account/download?path=/Developer_Tools/Xcode_#{version}/Xcode_#{version}.dmg"
 
 a = Mechanize.new { |agent|
