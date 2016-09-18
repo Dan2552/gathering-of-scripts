@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "Closing $1"
+osascript -e 'on run argv' -e 'quit application (item 1 of argv)' -e 'end run' $1
