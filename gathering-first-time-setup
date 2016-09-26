@@ -23,7 +23,7 @@ if was_successful; then
   echo ""
   echo "zsh is installed"
   echo "- adding to ~/.zshrc"
-  echo "source $script_dir/source-gathering-bash" >> ~/.zshrc
+  echo "source $script_dir/source-gathering-zsh" >> ~/.zshrc
 fi
 
 cat /etc/shells | grep /fish >/dev/null
