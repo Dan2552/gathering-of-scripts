@@ -3,6 +3,13 @@
 source common-functions
 source common-ruby
 
+ls ./*.podspec >/dev/null 2>&1 && ls ./Example >/dev/null 2>&1
+if was_successful; then
+  cd Example
+  $script_dir/xcode
+  exit $?
+fi
+
 ls ./Ambientfile >/dev/null 2> /dev/null
 if was_successful; then
   retry 1 bundle_exec_if_gemfile ambient
@@ -21,11 +28,6 @@ fi
 xcode_path=$(ruby -e 'puts `xcode-select -p`.gsub("/Contents/Developer", "")')
 
 open_project() {
-  ls ./*.podspec && ls ./Example
-  if was_successful; then
-    cd Example
-  fi
-
   dont_care_if_executes open *.xcworkspace $*
   if was_not_successful; then
     retry 1 open *.xcodeproj $*
