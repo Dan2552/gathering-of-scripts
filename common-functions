@@ -23,6 +23,10 @@ execute() {
   retry 1 $*
 }
 
+dont_care_if_executes() {
+  retry 1 pretend-fail-never-happened $*
+}
+
 execute_verbose() {
   local cmd="$*"
   $cmd
@@ -37,12 +41,16 @@ execute_verbose() {
 retry() {
   local n=0
   local try=$1
-  local silent=$2
+  local options=$2
 
-  if [[ $silent == "silent" ]]; then
+  if [[ $options == "silent" ]]; then
     local cmd="${@: 3}"
   else
-    local cmd="${@: 2}"
+    if [[ $options == "pretend-fail-never-happened" ]]; then
+      local cmd="${@: 3}"
+    else
+      local cmd="${@: 2}"
+    fi
   fi
 
   until [[ $n -ge $try ]]
@@ -51,11 +59,12 @@ retry() {
     pid=$!
 
     spin='🌑🌒🌓🌔🌕🌖🌗🌘'
+    spin_count=8
     i=0
 
     while kill -0 $pid 2>/dev/null
     do
-      i=$(( (i+1) %8 ))
+      i=$(( (i+1) %$spin_count ))
       printf "\r${spin:$i:1}  ${cmd:0:$[$(tput cols)-4]} "
       sleep .1
     done
@@ -65,7 +74,7 @@ retry() {
 
     status_code="$?"
     if [[ $status_code == 0 ]]; then
-      if [[ $silent == "silent" ]]; then
+      if [[ $options =~ "silent" ]]; then
         printf "\r\033[K"
       else
         log_echo "✅  ${cmd:0:$[$(tput cols)-4]}"
@@ -75,17 +84,14 @@ retry() {
       printf "\r\033[K"
       ((n++))
       if [[ $n -ge $try ]]; then
-        log_echo "⚠️️  $cmd"
-        log_echo "💥  failed with status $status_code 💥"
-        question print_error "Print error? (y|n)" "n"
-        if [[ $print_error == "y" ]]; then
-
-          clear
-          echo "-------"
+        if [[ $options =~ "pretend-fail-never-happened" ]]; then
+          printf "\r\033[K"
+          return $status_code
+        else
+          log_echo "💥️️  failed with status $status_code: $cmd"
           cat /tmp/common-retry.log
-          echo "-------"
+          exit $status_code
         fi
-        exit 1
       fi
       echo "retrying... $n"
       sleep 1;
@@ -121,8 +127,9 @@ question_if_empty() {
 }
 
 successfully() {
-  log_echo "🐾  $1 $2 $3 …"
-  $*
+  # log_echo "🐾  $*"
+  # $*
+  execute $*
   if [[ $? != 0 ]]; then
     echo ⛔️
     exit 1
@@ -177,8 +184,7 @@ capitalize() {
 }
 
 brew_install_or_update() {
-  echo "🐾  brew upgrade $*"
-  brew upgrade $*
+  dont_care_if_executes brew upgrade $*
   if [[ $? != 0 ]]; then
     successfully brew install $*
   fi
