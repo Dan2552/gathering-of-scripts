@@ -3,8 +3,6 @@
 source common-functions
 source common-ruby
 
-clean-derived-data || exit 1
-
 ls ./Ambientfile >/dev/null 2> /dev/null
 if was_successful; then
   retry 1 bundle_exec_if_gemfile ambient
