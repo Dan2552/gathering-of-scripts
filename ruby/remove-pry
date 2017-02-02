@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+def find_and_replace(path, old, new)
+  text = File.read(path)
+  replace = text.gsub(old, new)
+  File.open(path, 'w') { |file| file.puts replace } if text != replace
+end
+
+file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.rb') }
+
+file_paths.each do |path|
+  find_and_replace(path, /$\s*binding.pry$/, '')
+  find_and_replace(path, 'binding.pry; ', '')
+  find_and_replace(path, 'binding.pry;', '')
+  find_and_replace(path, ';binding.pry', '')
+  find_and_replace(path, '; binding.pry', '')
+  find_and_replace(path, 'binding.pry', '')
+end
