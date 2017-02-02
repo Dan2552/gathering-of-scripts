@@ -21,6 +21,11 @@ fi
 xcode_path=$(ruby -e 'puts `xcode-select -p`.gsub("/Contents/Developer", "")')
 
 open_project() {
+  ls ./*.podspec && ls ./Example
+  if was_successful; then
+    cd Example
+  fi
+
   dont_care_if_executes open *.xcworkspace $*
   if was_not_successful; then
     retry 1 open *.xcodeproj $*
