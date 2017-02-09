@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+files = `find . -iname '*.rb'`.split("\n")
+files.each do |filename|
+  contents = File.read(filename)
+  lines = contents.split("\n")
+  lines = lines.map { |l| l.gsub("\t", "  ").rstrip }
+  unless lines.last == ""
+    lines << ""
+  end
+  File.open(filename, 'w') { |file| file.write(lines.join("\n")) }
+end
