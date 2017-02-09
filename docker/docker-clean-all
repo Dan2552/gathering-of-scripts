@@ -1,6 +1,15 @@
 #!/bin/bash
 
+# Stop all
+docker kill $(docker ps -q) 2>/dev/null
+
 # Delete all containers
-docker rm $(docker ps -a -q)
+docker rm $(docker ps -a -q) 2>/dev/null
+
 # Delete all images
-docker rmi $(docker images -q)
+docker rmi $(docker images -q) --force 2>/dev/null
+
+# Remove all volumes
+docker volume ls -qf dangling=true | xargs docker volume rm
+
+docker ps
