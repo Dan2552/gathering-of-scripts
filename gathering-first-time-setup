@@ -15,6 +15,7 @@ if was_successful; then
   echo ""
   echo "bash is installed"
   echo "- adding to ~/.bash_profile"
+  echo "" >> ~/.bash_profile
   echo "source $script_dir/source-gathering-bash" >> ~/.bash_profile
 fi
 
@@ -23,6 +24,7 @@ if was_successful; then
   echo ""
   echo "zsh is installed"
   echo "- adding to ~/.zshrc"
+  echo "" >> ~/.zshrc
   echo "source $script_dir/source-gathering-zsh" >> ~/.zshrc
 fi
 
@@ -31,6 +33,7 @@ if was_successful; then
   echo ""
   echo "fish is installed"
   echo "- adding to ~/.config/fish/config.fish"
+  echo "" >> ~/.config/fish/config.fish
   echo "source $script_dir/source-gathering-fish" >> ~/.config/fish/config.fish
 fi
 
