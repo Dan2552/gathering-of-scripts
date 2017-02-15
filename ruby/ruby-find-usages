@@ -35,7 +35,7 @@ end
 
 files.each do |file|
   begin
-    puts find_usages_of(file, ARGV[0], ARGV[1])
+    puts find_usages_of(file, ARGV[0], ARGV[1] || 0)
   rescue
   end
 end
