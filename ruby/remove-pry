@@ -16,3 +16,9 @@ file_paths.each do |path|
   find_and_replace(path, '; binding.pry', '')
   find_and_replace(path, 'binding.pry', '')
 end
+
+file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.erb') }
+file_paths.each do |path|
+  find_and_replace(path, /$\s*<%\s*binding.pry\s*%>$/, '')
+  find_and_replace(path, '<%\s*binding.pry\s*%>', '')
+end
