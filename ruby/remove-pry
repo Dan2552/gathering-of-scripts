@@ -9,7 +9,10 @@ end
 file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.rb') }
 
 file_paths.each do |path|
+  find_and_replace(path, /$\s*before { binding.pry }$/, '')
+  find_and_replace(path, /^\s*before { binding.pry }$/, '')
   find_and_replace(path, /$\s*binding.pry$/, '')
+  find_and_replace(path, /^\s*binding.pry$/, '')
   find_and_replace(path, 'binding.pry; ', '')
   find_and_replace(path, 'binding.pry;', '')
   find_and_replace(path, ';binding.pry', '')
