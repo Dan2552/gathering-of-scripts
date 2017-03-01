@@ -15,6 +15,8 @@ execute git config --global push.default "current"
 execute defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 execute defaults write NSGlobalDomain KeyRepeat -int 0
 
+execute ssh-add -A
+
 execute brew update
 execute brew doctor
 
