@@ -20,3 +20,13 @@ bundle_exec_if_gemfile() {
      $*
   fi
 }
+
+is_looking_like_a_ruby_project() {
+  ls ./Gemfile >/dev/null 2> /dev/null
+  if was_successful; then return 0; fi
+  ls ./Rakefile >/dev/null 2> /dev/null
+  if was_successful; then return 0; fi
+  ls ./.ruby-version >/dev/null 2> /dev/null
+  if was_successful; then return 0; fi
+  return 1
+}

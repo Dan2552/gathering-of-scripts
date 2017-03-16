@@ -8,3 +8,4 @@ set PATH $script_dir/macos $PATH
 set PATH $script_dir/provisioning $PATH
 set PATH $script_dir/ruby $PATH
 set PATH $script_dir/docker $PATH
+set PATH $script_dir/general $PATH
