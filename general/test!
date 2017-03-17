@@ -6,9 +6,9 @@ source common-ruby
 if is_looking_like_a_ruby_project; then
   bundle show rspec >/dev/null
   if was_successful; then
-    bundle_exec_if_gemfile rspec
+    bundle_exec_if_gemfile rspec $*
   else
-    bundle_exec_if_gemfile rake test
+    bundle_exec_if_gemfile rake test $*
   fi
 
   exit $?
