@@ -6,7 +6,13 @@ source common-ruby
 if is_looking_like_a_ruby_project; then
   bundle show rspec >/dev/null
   if was_successful; then
-    bundle_exec_if_gemfile rspec $*
+    bundle_exec_if_gemfile rspec $* 2>/tmp/.test!
+    if grep -q "Migrations are pending. To resolve this issue, run" "/tmp/.test!"; then
+      rm /tmp/.test!
+      bundle_exec_if_gemfile rake db:setup
+      $script_dir/test!
+      exit $?
+    fi
   else
     bundle_exec_if_gemfile rake test $*
   fi
