@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+source common-functions
+source common-ruby
+
+kill $(cat ./tmp/pids/server.pid)
+
+if is_looking_like_a_ruby_project; then
+  bundle_exec_if_gemfile bin/server
+  if was_successful; then exit 0; fi
+
+  bundle_exec_if_gemfile rails s
+  if was_successful; then exit 0; fi
+fi
+
+python -m SimpleHTTPServer 8000
