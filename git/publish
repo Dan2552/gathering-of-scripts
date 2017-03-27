@@ -1,3 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env
+
+source common-functions
+
+if [[ $(current-branch) == "master" ]]; then
+  question sure "You are currently on master branch. Are you sure? (y/n)" "no"
+  if [[ $sure != "y" ]]; then
+    exit 1
+  fi
+fi
 
 git push -u origin $(current-branch)
