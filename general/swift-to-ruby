@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+class SwiftToRuby
+  def initialize(path)
+    @path = path
+  end
+
+  def translate
+    replace /^ *import \w+\n/, ''
+    replace /^ *struct (\w+) {/, 'class \1'
+    replace /^( *)} else {/, '\1else'
+    replace /^( *)}/, '\1end'
+    replace /^( *)(var|let) (\w+): (\w+)/, '\1attr_reader :\3; attr_writer :\3 # \4'
+    replace /^( *)init(\(.*\)) {/, '\1def initialize\2'
+  end
+
+  private
+
+  def replace(old, new)
+    text = File.read(@path)
+    replace = text.gsub(old, new)
+    File.open(@path, 'w') { |file| file.puts replace } if text != replace
+  end
+end
+
+Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.swift') }
+                .each { |path| SwiftToRuby.new(path).translate }
