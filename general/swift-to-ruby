@@ -6,12 +6,17 @@ class SwiftToRuby
   end
 
   def translate
-    replace /^ *import \w+\n/, ''
-    replace /^ *struct (\w+) {/, 'class \1'
-    replace /^( *)} else {/, '\1else'
-    replace /^( *)}/, '\1end'
-    replace /^( *)(var|let) (\w+): (\w+)/, '\1attr_reader :\3; attr_writer :\3 # \4'
-    replace /^( *)init(\(.*\)) {/, '\1def initialize\2'
+    replace(/^ *import \w+\n/,  '')
+    replace(/^ *struct (\w+) {/, 'class \1')
+    replace(/^( *)} else {/, '\1else')
+    replace(/^( *)}/, '\1end')
+    replace(/^( *)(var|let) (\w+): (\w+)/, '\1attr_reader :\3; attr_writer :\3 # \4')
+    replace(/^( *)static func (\w+\(.*\))( -> \w+|) {/, '\1def self.\2')
+    replace(/\(_ (\w+): \w+/, '(\1')
+    replace(/\s([A-Z]\w+)\(/, ' \1.new(')
+    replace(/\w+ (\w+): \w+/, '\1')
+    replace(/^( *)init(\(.*\)) {/, '\1def initialize\2')
+    replace(/^( *)func (\w+\(.*\))( -> \w+|) {/, '\1def \2')
   end
 
   private
