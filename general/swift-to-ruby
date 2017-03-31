@@ -1,30 +1,53 @@
 #!/usr/bin/env ruby
 
 class SwiftToRuby
+  attr_reader :text
+
   def initialize(path)
     @path = path
   end
 
   def translate
-    replace(/^ *import \w+\n/,  '')
-    replace(/^ *struct (\w+) {/, 'class \1')
-    replace(/^( *)} else {/, '\1else')
-    replace(/^( *)}/, '\1end')
-    replace(/^( *)(var|let) (\w+): (\w+)/, '\1attr_reader :\3; attr_writer :\3 # \4')
-    replace(/^( *)static func (\w+\(.*\))( -> \w+|) {/, '\1def self.\2')
-    replace(/\(_ (\w+): \w+/, '(\1')
-    replace(/\s([A-Z]\w+)\(/, ' \1.new(')
-    replace(/\w+ (\w+): \w+/, '\1')
-    replace(/^( *)init(\(.*\)) {/, '\1def initialize\2')
-    replace(/^( *)func (\w+\(.*\))( -> \w+|) {/, '\1def \2')
+    read
+
+    text.gsub!(/^ *import \w+\n/,  '')
+    text.gsub!(/^ *struct (\w+) {/, 'class \1')
+
+    text.gsub!(/^( *)if (.*) {$/, '\1if \2')
+    text.gsub!(/^( *)} else {/, '\1else')
+    text.gsub!(/^( *)} else if(.*){/, '\1elsif\2')
+    text.gsub!(/^( *)}/, '\1end')
+
+    text.sub!(/^( *)private /, '\1private' + "\n\n" + '\1')
+    text.gsub!(/^( *)private (\w+) func/, '\1\2 func')
+    text.gsub!(/^( *)static func (\w+\(.*\))( -> \w+|) {/, '\1def self.\2')
+    text.gsub!(/\s([A-Z]\w+)\(/, ' \1.new(')
+
+    text.gsub!(/^( *)init(\(.*\)) {/, '\1def initialize\2')
+    text.gsub!(/^( *)func (\w+\(.*\))( -> \w+(\?|)|) {/, '\1def \2')
+
+    text.gsub!(/(\[\w+\])\(\)/, '[] # \1')
+    text.gsub!(/\\\(([\w\.]+)\)/, '#{\1}')
+    text.gsub!(/^( *)_ = /, '\1')
+
+    text.gsub!(/\(_ (\w+): ([A-Z]\w+)/, '(\1')
+    text.gsub!(/\(\w (\w+): ([A-Z]\w+)/, '(\1:')
+
+    # text.gsub!(/(\w+): \w+/, '\1')
+
+    text.gsub!(/\(\)/, '')
+
+    write
   end
 
   private
 
-  def replace(old, new)
-    text = File.read(@path)
-    replace = text.gsub(old, new)
-    File.open(@path, 'w') { |file| file.puts replace } if text != replace
+  def read
+    @text = File.read(@path)
+  end
+
+  def write
+    File.open(@path, 'w') { |file| file.puts text }
   end
 end
 
