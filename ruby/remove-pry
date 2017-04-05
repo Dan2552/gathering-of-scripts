@@ -26,3 +26,9 @@ file_paths.each do |path|
   find_and_replace(path, /$\s*<%\s*binding.pry\s*%>$/, '')
   find_and_replace(path, '<%\s*binding.pry\s*%>', '')
 end
+
+file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.slim') }
+file_paths.each do |path|
+  find_and_replace(path, /^\s*- binding.pry\n/, '')
+  find_and_replace(path, /^\s*- binding.pry$/, '')
+end
