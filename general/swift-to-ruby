@@ -24,7 +24,7 @@ class SwiftToRuby
     text.gsub!(/\s([A-Z]\w+)\(/, ' \1.new(')
 
     text.gsub!(/^( *)init(\(.*\)) {/, '\1def initialize\2')
-    text.gsub!(/^( *)func (\w+\(.*\))( -> \w+(\?|)|) {/, '\1def \2')
+    text.gsub!(/^( *)func (\w+\(.*\))( -> (\[|)\w+(\?|)(\]|)|) {/, '\1def \2')
 
     text.gsub!(/(\[\w+\])\(\)/, '[] # \1')
     text.gsub!(/\\\(([\w\.]+)\)/, '#{\1}')
@@ -35,7 +35,13 @@ class SwiftToRuby
 
     # text.gsub!(/(\w+): \w+/, '\1')
 
+    text.gsub!(/\?\?/, '||')
+    text.gsub!(/\/\/ /, '# ')
     text.gsub!(/\(\)/, '')
+
+    text.gsub!(/^( *)for (\w+) in (\w+) {/, '\1\3.each do |\2|')
+
+    text.gsub!(/ { ([\w, ]+) in/, ' do |\1|')
 
     write
   end
@@ -51,5 +57,5 @@ class SwiftToRuby
   end
 end
 
-Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.swift') }
+Dir.glob('**/*').select { |path| File.file?(path) && (path.end_with?('.swift') || path.end_with?('.rb')) }
                 .each { |path| SwiftToRuby.new(path).translate }
