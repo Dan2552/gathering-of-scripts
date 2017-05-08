@@ -18,13 +18,10 @@ execute defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool 
 execute defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
 # Set a blazingly fast keyboard repeat rate
-execute defaults write NSGlobalDomain KeyRepeat -int 1
+execute defaults write NSGlobalDomain KeyRepeat -int 2
 execute defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
 execute ssh-add -A
-
-execute brew update
-execute brew doctor
 
 execute wifi
 
@@ -45,3 +42,6 @@ fi
 
 #TODO add this in:
 # https://www.quernus.co.uk/2015/10/22/force-git-to-use-ssh/
+
+execute brew update
+brew doctor
