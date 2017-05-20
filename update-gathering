@@ -3,5 +3,7 @@
 current_dir=$(pwd)
 script_dir=$( cd "$( dirname "$0" )" && pwd )
 cd $script_dir
+gem uninstall branch_cli -x 2>/dev/null || echo ""
+which branch >/dev/null || gem install branch_cli
 branch master
 cd $current_dir

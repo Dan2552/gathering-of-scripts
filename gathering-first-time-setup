@@ -37,5 +37,7 @@ if was_successful; then
   echo "source $script_dir/source-gathering-fish" >> ~/.config/fish/config.fish
 fi
 
+gem install branch_cli
+
 echo ""
 echo "Complete! Restart your shell to use the scripts."

@@ -25,7 +25,7 @@ It's always a controversial topic when you download bash scripts from the intern
 ## Most notable
 
 Git
-- **`branch`** - switching branches with  ease.
+- **`branch`** - switching branches with ease.
 - **`find-conflicts`** - it's in the name
 - **`just-continue`** - fantastic tool for rebasing, merging and cherry-picking. No longer type out `git add .`, `git rebase --continue`, etc. Will automatically check for conflicts (using `find-conflicts`) and continue if it detects none. If your project happens to be a Rails project, it will also try and automatically resolve conflicts using `schema`.
 
