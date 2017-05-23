@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+chruby_auto() {
+  source /usr/local/share/chruby/chruby.sh
+  chruby $(cat .ruby-version)
+}
