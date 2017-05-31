@@ -2,7 +2,7 @@
 
 I've been building little scripts to help my development throughout the years, as you do. Most of these do nothing amazing on their own, but they do simplify some things and are both useful in your working environment and for building scripts on-top of. **Contributions very welcome.**
 
-## Installation
+## Installation
 
 If you want all of the scripts available to you run:
 ```
