@@ -21,6 +21,14 @@ execute defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 execute defaults write NSGlobalDomain KeyRepeat -int 2
 execute defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
+mkdir ~/Library/KeyBindings/ 2>/dev/null
+rm ~/Library/KeyBindings/DefaultKeyBinding.dict 2>/dev/null
+touch ~/Library/KeyBindings/DefaultKeyBinding.dict
+echo '{
+"~ " = ("insertText:", " ");
+}' >> ~/Library/KeyBindings/DefaultKeyBinding.dict
+check_last "Disable weird alt+space thing"
+
 execute ssh-add -A
 
 execute wifi
