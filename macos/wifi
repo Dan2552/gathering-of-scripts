@@ -27,3 +27,21 @@ do
   fi
   sleep 5
 done
+
+# ruby -e '
+# require "pry"
+# def list_of_wifi
+#   list = `/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s`
+#   list = list.split("\n").map do |line|
+#     match = line.match(/(.*) \w\w:\w\w:\w\w:/)
+#     if match
+#       match[1].strip
+#     else
+#       nil
+#     end
+#   end
+#   list = list.compact.uniq
+# end
+
+# puts list_of_wifi
+# '
