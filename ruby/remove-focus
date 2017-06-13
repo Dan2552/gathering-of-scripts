@@ -3,7 +3,10 @@
 def find_and_replace(path, old, new)
   text = File.read(path)
   replace = text.gsub(old, new)
-  File.open(path, 'w') { |file| file.puts replace } if text != replace
+  if text != replace
+    puts path
+    File.open(path, 'w') { |file| file.puts replace }
+  end
 end
 
 file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.rb') }
