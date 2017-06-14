@@ -1,8 +1,14 @@
 #!/usr/bin/env ruby
 
-def find_and_replace(path, old, new)
+def find_and_replace_focus(path)
   text = File.read(path)
-  replace = text.gsub(old, new)
+
+  replace = text
+
+  replace = replace.gsub(/(^\s*(RSpec.describe|describe|context|it) .*)(,\s*focus:\s+true)( do\s*$)/, '\1\4')
+  replace = replace.gsub(/(^\s*(RSpec.describe|describe|context|it) .*)(,\s*:focus\s*=>\s*true)( do\s*$)/, '\1\4')
+  replace = replace.gsub(/(^\s*(RSpec.describe|describe|context|it) .*)(,\s*:focus)( do\s*$)/, '\1\4')
+
   if text != replace
     puts path
     File.open(path, 'w') { |file| file.puts replace }
@@ -12,5 +18,5 @@ end
 file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.rb') }
 
 file_paths.each do |path|
-  find_and_replace(path, /, focus: true/, '')
+  find_and_replace_focus(path)
 end
