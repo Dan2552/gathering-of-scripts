@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source common-functions
+source keychain-functions
+
 ping_func(){
     results=$(ping -c 1 -t 1 google.co.uk >/dev/null 2>/dev/null)
     return $?
@@ -19,29 +22,64 @@ check_net() {
   fi
 }
 
-while :
-do
-  check_net
-  if [[ $1 != 'forever' ]]; then
-    exit 0
-  fi
-  sleep 5
-done
+list() {
+  ruby -e '
 
-# ruby -e '
-# require "pry"
-# def list_of_wifi
-#   list = `/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s`
-#   list = list.split("\n").map do |line|
-#     match = line.match(/(.*) \w\w:\w\w:\w\w:/)
-#     if match
-#       match[1].strip
-#     else
-#       nil
-#     end
-#   end
-#   list = list.compact.uniq
-# end
+  require "pry"
+  def list_of_wifi
+    list = `/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s`
+    list = list.split("\n")[1..-1].map do |line|
+      match = line.match(/(.*) \w\w:\w\w:\w\w:/)
+      if match
+        match[1].strip
+      else
+        nil
+      end
+    end
+    list = list.compact.uniq
+  end
 
-# puts list_of_wifi
-# '
+  puts list_of_wifi
+  '
+}
+
+switch() {
+  keychain_name=$(ruby -e "puts 'wifi$*'.gsub(' ', '')")
+  # echo $keychain_name
+  password=$(get_keychain_password "$keychain_name")
+  question_if_empty password "Enter password for $*"
+  set_keychain_password "$keychain_name" "$*" $password
+
+  networksetup -setairportnetwork en0 "$*" $password
+}
+
+fix() {
+  while :
+  do
+    check_net
+    if [[ $1 != 'forever' ]]; then
+      exit 0
+    fi
+    sleep 5
+  done
+}
+
+if [[ $1 == "--switch" || $1 == "-s" ]]; then
+  switch $2
+  exit $?
+fi
+
+if [[ $1 == "--list" || $1 == "-l" ]]; then
+  list
+  exit $?
+fi
+
+if [[ $1 == "--fix" || $1 == "-f" ]]; then
+  fix
+  exit $?
+fi
+
+echo "Usage:"
+echo "--switch | -s      Switch network"
+echo "--list   | -l      List networks"
+echo "--fix    | -f      Turn wifi off and on if connection is bad"
