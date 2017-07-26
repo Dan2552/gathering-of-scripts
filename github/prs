@@ -7,4 +7,6 @@ url.gsub!(".git", "")
 url.gsub!("https///", "https://")
 url = "#{url}/pulls"
 
+url = "https://github.com/pulls" if url == "/pulls"
+
 `open #{url}`
