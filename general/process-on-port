@@ -1,3 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env ruby
 
-lsof -n -i4TCP:$1 | grep LISTEN
+stat = `netstat -vanp tcp | grep ::1.#{ARGV.first} | grep LISTEN`
+result = stat.split(" ").last(2).first rescue
+result or result = ""
+
+if result.length > 0
+  puts result
+  exit 0
+else
+  exit 1
+end
