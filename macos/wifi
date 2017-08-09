@@ -4,17 +4,25 @@ source common-functions
 source keychain-functions
 
 ping_func(){
-    results=$(ping -c 1 -t 1 google.co.uk >/dev/null 2>/dev/null)
-    return $?
+  results=$(ping -c 1 -t 1 google.co.uk >/dev/null 2>/dev/null)
+  return $?
+}
+
+off() {
+  networksetup -setairportpower en0 off
+}
+
+on() {
+  networksetup -setairportpower en0 on
 }
 
 check_net() {
   ping_func
   if [[ $? > 0 ]]; then
     echo "internet doesn't seem ok"
-    networksetup -setairportpower en0 off
+    off
     sleep 3
-    networksetup -setairportpower en0 on
+    on
     sleep 15
     check_net
   else
@@ -66,6 +74,8 @@ fix() {
 
 help_text() {
   echo "Usage:"
+  echo "--on               Turn wifi on"
+  echo "--off              Turn wifi off"
   echo "--switch | -s      Switch network"
   echo "--list   | -l      List networks"
   echo "--fix    | -f      Turn wifi off and on if connection is bad"
@@ -90,6 +100,16 @@ fi
 
 if [[ $1 == "--fix" || $1 == "-f" ]]; then
   fix $2
+  exit $?
+fi
+
+if [[ $1 == "--on" ]]; then
+  on $2
+  exit $?
+fi
+
+if [[ $1 == "--off" ]]; then
+  off $2
   exit $?
 fi
 
