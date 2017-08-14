@@ -3,8 +3,12 @@
 exit 1 if (ARGV.first || "").length < 1
 
 result = `lsof -n -i4TCP:#{ARGV.first} | grep LISTEN | second-column`
-result or result = `netstat -vanp tcp | grep ::1.#{ARGV.first} | grep LISTEN || netstat -vanp tcp | grep 127.0.0.1.#{ARGV.first} | grep LISTEN`.split(" ").last(2).first rescue
-result or result = ""
+result = nil if result == ""
+begin
+  result ||= `netstat -vanp tcp | grep ::1.#{ARGV.first} | grep LISTEN || netstat -vanp tcp | grep 127.0.0.1.#{ARGV.first} | grep LISTEN`.split(" ").last(2).first
+rescue
+end
+result ||= ""
 
 if result.length > 0
   puts result
