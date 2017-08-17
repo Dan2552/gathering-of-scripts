@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 
 chruby_auto() {
-  source /usr/local/share/chruby/chruby.sh
-  chruby $(cat .ruby-version)
+  source /usr/local/share/chruby/chruby.sh 2>/dev/null
+
+  chruby --version >/dev/null 2>&1
+  if was_successful; then
+    chruby $(cat .ruby-version)
+  fi
+
+  rbenv --version >/dev/null 2>&1
+  if was_successful; then
+    eval "$(rbenv init -)"
+    rbenv local $(cat .ruby-version)
+  fi
+
+  rvm --version >/dev/null 2>&1
+  if was_successful; then
+    rvm use $(cat .ruby-version)
+  fi
 }
