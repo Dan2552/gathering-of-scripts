@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source common-functions
+source common-ruby
 
 rm spec/_console.rb 2>/dev/null
 cp $script_dir/rspec_console/templates/_console.rb ./spec/_console.rb
-rspec spec/_console.rb
+bundle_exec_if_gemfile rspec spec/_console.rb
 rm spec/_console.rb 2>/dev/null
