@@ -2,12 +2,14 @@
 
 source common-functions
 
-check_sudo
+if [[ $1 != "--no-interaction" ]]; then
+  check_sudo
 
-execute sudo mkdir -p /usr/local
-execute sudo mkdir -p /Library/Caches/Homebrew
-execute sudo chown -R `whoami` /usr/local
-execute sudo chown -R `whoami` /Library/Caches/Homebrew
+  execute sudo mkdir -p /usr/local
+  execute sudo mkdir -p /Library/Caches/Homebrew
+  execute sudo chown -R `whoami` /usr/local
+  execute sudo chown -R `whoami` /Library/Caches/Homebrew
+fi
 
 execute git config --global credential.helper "osxkeychain"
 execute git config --global push.default "current"
@@ -31,8 +33,6 @@ check_last "Disable weird alt+space thing"
 
 execute ssh-add -A
 
-execute wifi
-
 ls .bundle/config >/dev/null 2>&1
 if was_successful; then
   warn ".bundle/config exists"
@@ -48,8 +48,7 @@ if was_successful; then
   successfully rm ./*/*/xcuserdata/`whoami`.xcuserdatad/UserInterfaceState.xcuserstate
 fi
 
+echo "Current Wi-Fi: $(wifi)"
+
 #TODO add this in:
 # https://www.quernus.co.uk/2015/10/22/force-git-to-use-ssh/
-
-execute brew update
-brew doctor
