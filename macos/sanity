@@ -5,14 +5,15 @@ source common-functions
 if [[ $1 != "--no-interaction" ]]; then
   check_sudo
 
-  execute sudo mkdir -p /usr/local
   execute sudo mkdir -p /Library/Caches/Homebrew
-  execute sudo chown -R `whoami` /usr/local
   execute sudo chown -R `whoami` /Library/Caches/Homebrew
 fi
 
 execute git config --global credential.helper "osxkeychain"
 execute git config --global push.default "current"
+
+execute chmod 600 ~/.ssh/*
+execute chmod 644 ~/.ssh/known_hosts
 
 execute defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 
