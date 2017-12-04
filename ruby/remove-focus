@@ -5,9 +5,11 @@ def find_and_replace_focus(path)
 
   replace = text
 
-  replace = replace.gsub(/(^\s*(RSpec.describe|RSpec.feature|feature|describe|context|it|scenario) .*)(,\s*focus:\s+true)( do\s*$)/, '\1\4')
-  replace = replace.gsub(/(^\s*(RSpec.describe|RSpec.feature|feature|describe|context|it|scenario) .*)(,\s*:focus\s*=>\s*true)( do\s*$)/, '\1\4')
-  replace = replace.gsub(/(^\s*(RSpec.describe|RSpec.feature|feature|describe|context|it|scenario) .*)(,\s*:focus)( do\s*$)/, '\1\4')
+  replace = replace.gsub(/(^\s*(RSpec\.describe|RSpec\.feature|feature|describe|context|it|scenario) .*)(,\s*focus:\s+true)( do\s*$)/, '\1\4')
+  replace = replace.gsub(/(^\s*(RSpec\.describe|RSpec\.feature|feature|describe|context|it|scenario) .*)(,\s*:focus\s*=>\s*true)( do\s*$)/, '\1\4')
+  replace = replace.gsub(/(^\s*(RSpec\.describe|RSpec\.feature|feature|describe|context|it|scenario) .*)(,\s*:focus)( do\s*$)/, '\1\4')
+
+  replace = replace.gsub(/(^\s*)(RSpec\.)?f((describe|it) .* do\s*$)/, '\1\2\3')
 
   if text != replace
     puts path
