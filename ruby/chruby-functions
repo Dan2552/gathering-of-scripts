@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source common-functions
+
 chruby_auto() {
   source /usr/local/share/chruby/chruby.sh 2>/dev/null
 
