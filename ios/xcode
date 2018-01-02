@@ -27,10 +27,18 @@ fi
 
 xcode_path=$(ruby -e 'puts `xcode-select -p`.gsub("/Contents/Developer", "")')
 
+xcworkspace() {
+  ruby -e "exit system('cd $current_dir && open *.xcworkspace $*')"
+}
+
+xcodeproj() {
+  ruby -e "exit system('cd $current_dir && open *.xcodeproj $*')"
+}
+
 open_project() {
-  dont_care_if_executes open "*.xcworkspace" $*
+  dont_care_if_executes xcworkspace $*
   if was_not_successful; then
-    retry 1 open "*.xcodeproj" $*
+    retry 1 xcodeproj $*
   fi
 }
 
