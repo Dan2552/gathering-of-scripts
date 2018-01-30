@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+if ARGV[0] == "quote"
+  paste_value = `pbpaste`.chomp
+
+  paste_value = paste_value.split("\n").map do |line|
+    "> #{line}"
+  end.join("\n")
+
+  File.open("/tmp/markdown", 'w') { |file| file.write(paste_value) }
+
+  `pbcopy < /tmp/markdown`
+  `rm /tmp/markdown`
+end
+
+if ARGV[0] == "code"
+  paste_value = `pbpaste`.chomp
+
+  paste_value = "```\n#{paste_value}\n```"
+
+  File.open("/tmp/markdown", 'w') { |file| file.write(paste_value) }
+
+  `pbcopy < /tmp/markdown`
+  `rm /tmp/markdown`
+end
