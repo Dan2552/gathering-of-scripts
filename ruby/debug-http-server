@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+source common-functions
+
+cd $script_dir
+cd ../debug-http-server
+bundle check || bundle install
+
+bundle exec ruby serve.rb
