@@ -52,7 +52,10 @@ class ConflictFinder
 end
 
 cf = ConflictFinder.new
-file_paths = Dir.glob("**/*").select { |path| File.file?(path) }
+file_paths = Dir.glob("**/*", File::FNM_DOTMATCH)
+  .select { |path| File.file?(path) }
+  .select { |path| !path.start_with?(".git") }
+
 file_paths.each { |path| cf.find_conflicts(path) }
 
 cf.print_conflicts
