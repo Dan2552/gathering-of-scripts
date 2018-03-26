@@ -3,7 +3,8 @@
 source common-functions
 
 chruby_auto() {
-  source /usr/local/share/chruby/chruby.sh 2>/dev/null
+  [[ -s /usr/local/share/chruby/chruby.sh ]] && source /usr/local/share/chruby/chruby.sh
+  [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
   chruby --version >/dev/null 2>&1
   if was_successful; then
