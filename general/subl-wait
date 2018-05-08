@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# By setting "subl -w" as EDITOR directly, some apps have problems with
+# arguments being provided. Using this file, EDITOR can instead be set to run
+# this script with no arguments.
+
+subl -w $*
