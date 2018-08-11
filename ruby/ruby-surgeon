@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+bundler_missing = `which bundle` == ""
+if bundler_missing
+  `gem install bundler`
+end
+
+bundle_output = `bundle install`
+
+bundler_missing = bundle_output.match /No such file or directory - bundle/
+
+libv8 = bundle_output.match /An error occurred while installing libv8 \((.*)\)/
+if libv8
+  version = libv8[1]
+  `brew install node`
+  `gem install libv8 -v #{version} -- --with-system-v8`
+
+  exit 1
+end
+
+ruby_racer = bundle_output.match /An error occurred while installing therubyracer \((.*)\)/
+if ruby_racer
+  version = ruby_racer[1]
+  `gem uninstall libv8`
+
+  exit 1
+end
+
+puts "bundle install is fine 💃🕺"
