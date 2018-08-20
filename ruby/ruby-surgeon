@@ -26,4 +26,10 @@ if ruby_racer
   exit 1
 end
 
+nokogiri_xmlsec = bundle_output.match /An error occurred while installing nokogiri-xmlsec-instructure/
+if nokogiri_xmlsec
+  `brew install libxmlsec1`
+  exit 1
+end
+
 puts "bundle install is fine 💃🕺"
