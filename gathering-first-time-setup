@@ -6,7 +6,7 @@ source $script_dir/common-functions
 which update-gathering >/dev/null
 if was_successful; then
   echo "Looks like gathering is already installed"
-  exit 1
+  exit 0
 fi
 
 echo "Detecting shell..."
