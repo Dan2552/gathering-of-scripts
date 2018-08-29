@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'listen'
+rescue LoadError
+  puts "run `gem install listen`"
+  exit 1
+end
+
+dir = Dir.pwd
+
+def run
+  system "clear" or system "cls"
+  system("simple-rspec")
+end
+
+run
+
+listener = Listen.to(dir) do |modified, added, removed|
+  run
+end
+
+begin
+  listener.start
+  sleep
+rescue Interrupt
+  exit 130
+end

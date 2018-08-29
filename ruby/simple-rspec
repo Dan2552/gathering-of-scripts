@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+require 'open3'
+require 'pry'
+
+class RunResult
+  attr_reader :stdout,
+              :stderr,
+              :exit_status
+
+  def initialize(stdout, stderr, exit_status)
+    @stdout = stdout
+    @stderr = stderr
+    @exit_status = exit_status
+  end
+end
+
+def run_command(command, args = [])
+  command_with_args = "#{command} #{args.join(' ')}"
+
+  stdout, stderr, status = Open3.capture3(*([command.split(" "), args].flatten))
+
+  RunResult.new(stdout || "", stderr || "", status.exitstatus)
+end
+
+def find_debugger
+  file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.rb') }
+  file_paths.each do |path|
+    text = File.read(path)
+    return true if text.include?("binding.pry") || text.include?("debugger") || text.include?("byebug")
+  end
+  false
+end
+
+if find_debugger
+  puts "debugger found"
+  system("bundle exec rspec --fail-fast --color")
+  exit
+end
+
+run = run_command("bundle exec rspec --fail-fast")
+
+# binding.pry
+
+if run.exit_status == 0
+  puts "\e[32mPass"
+else
+  run.stdout.lines do |line|
+    line = line.gsub("\e[32m.", "")
+    # line = line.gsub("\e[31mF", "")
+    line = line.gsub(/^Failed examples.*/, "")
+    line = line.gsub(/^Finished in.*/, "")
+    line = line.gsub(/^Failures:.*/, "")
+    line = line.gsub(/^.* examples, 1 failure/, "")
+    # binding.pry if line.include?("rspec")
+    line = line.gsub(/\e\[31mrspec /, "\n\e[31msimple-rspec ")
+    puts line if line.gsub(/\e\[(\d+)(;\d+)*m/, "").strip.length > 0
+  end
+  # binding.pry
+  ""
+end
