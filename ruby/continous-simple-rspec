@@ -10,8 +10,15 @@ end
 dir = Dir.pwd
 
 def run
+  kill
   system "clear" or system "cls"
-  system("simple-rspec")
+  system "printf '\e[3J'"
+  @running = Process.spawn("simple-rspec")
+end
+
+def kill
+  return unless @running
+  system("kill -9 #{@running}")
 end
 
 run
