@@ -2,6 +2,148 @@
 
 require 'open3'
 require 'pry'
+require 'io/console'
+
+class String
+  def black;          "\e[30m#{self}\e[0m" end
+  def red;            "\e[31m#{self}\e[0m" end
+  def green;          "\e[32m#{self}\e[0m" end
+  def brown;          "\e[33m#{self}\e[0m" end
+  def yellow;         "\e[33m#{self}\e[0m" end
+  def blue;           "\e[34m#{self}\e[0m" end
+  def magenta;        "\e[35m#{self}\e[0m" end
+  def cyan;           "\e[36m#{self}\e[0m" end
+  def gray;           "\e[37m#{self}\e[0m" end
+
+  def bg_black;       "\e[40m#{self}\e[0m" end
+  def bg_red;         "\e[41m#{self}\e[0m" end
+  def bg_green;       "\e[42m#{self}\e[0m" end
+  def bg_brown;       "\e[43m#{self}\e[0m" end
+  def bg_blue;        "\e[44m#{self}\e[0m" end
+  def bg_magenta;     "\e[45m#{self}\e[0m" end
+  def bg_cyan;        "\e[46m#{self}\e[0m" end
+  def bg_gray;        "\e[47m#{self}\e[0m" end
+
+  def bold;           "\e[1m#{self}\e[22m" end
+  def italic;         "\e[3m#{self}\e[23m" end
+  def underline;      "\e[4m#{self}\e[24m" end
+  def blink;          "\e[5m#{self}\e[25m" end
+  def reverse_color;  "\e[7m#{self}\e[27m" end
+end
+
+
+class Ask
+  def self.list(title, options)
+    Ask.new(title, options).list
+  end
+
+  def initialize(title, options)
+    @title = title
+    @options = options
+    @selected = 0
+    @last_length = 0
+  end
+
+  def list
+    print_choices
+
+    @waiting_for_input = true
+    while(waiting_for_input) do
+      handle_key_input
+    end
+
+    selected
+  end
+
+  private
+
+  attr_reader :title,
+              :options,
+              :selected,
+              :waiting_for_input
+
+def handle_key_input
+  c = read_char
+
+  case c
+  when "\r"
+    handle_choice
+  when "\e[A"
+    handle_up
+  when "\e[B"
+    handle_down
+  when "\u0003" # ctrl + c
+    exit 0
+  when "A"
+    handle_up
+  when "B"
+    handle_down
+  end
+end
+
+def handle_choice
+  @waiting_for_input = false
+end
+
+def handle_up
+  @selected = selected - 1
+  @selected = options.count - 1 if selected < 0
+  print_choices
+end
+
+def handle_down
+  @selected = selected + 1
+  @selected = 0 if selected > options.count - 1
+  print_choices
+end
+
+  def read_char
+    STDIN.echo = false
+    STDIN.raw!
+
+    input = STDIN.getc.chr
+    if input == "\e" then
+      input << $stdin.read_nonblock(3) rescue nil
+      input << $stdin.read_nonblock(2) rescue nil
+    end
+    STDIN.echo = true
+    STDIN.cooked!
+
+    input
+  end
+
+  def print_choices
+    choices = options.map.with_index do |option, index|
+      if index == selected
+        "‣ #{option}".blue
+      else
+        "  #{option}"
+      end
+    end
+
+    print_to_fit("#{title}\n#{choices.join("\n")}")
+  end
+
+  def get_line_width
+    `tput cols`.chomp.to_i
+  end
+
+  def print_to_fit(str)
+    print("\b" * @last_length)
+
+    width = get_line_width
+    lines = str.split("\n")
+    one_big_line = ""
+    lines.each do |line|
+      line_for_measure = line.gsub("‣", ">").gsub(/\e\[(\d+)(;\d+)*m/, "").gsub("\e[m", "")
+      one_big_line = one_big_line + line + (" " * (width - line_for_measure.length))
+    end
+
+    @last_length = one_big_line.length
+
+    print "\r" + one_big_line
+  end
+end
 
 class RunResult
   attr_reader :stdout,
@@ -34,16 +176,20 @@ end
 
 if find_debugger
   puts "debugger found"
-  system("bundle exec rspec --fail-fast --color")
+  system("bundle exec rspec --fail-fast --color --format documentation")
   exit
 end
 
+printf("rspec... ")
 run = run_command("bundle exec rspec --fail-fast")
 
 # binding.pry
 
+focused = run.stdout.include?("include {:focus=>true}")
+
 if run.exit_status == 0
-  puts "\e[32mPass"
+  focused_output = focused ? "(focused)".yellow : ""
+  puts "\e[32mPass\e[0m #{focused_output}"
 else
   run.stdout.lines do |line|
     line = line.gsub("\e[32m.", "")
@@ -56,6 +202,10 @@ else
     line = line.gsub(/\e\[31mrspec /, "\n\e[31msimple-rspec ")
     puts line if line.gsub(/\e\[(\d+)(;\d+)*m/, "").strip.length > 0
   end
-  # binding.pry
-  ""
+end
+
+if focused
+  puts ""
+  response = Ask.list("Options", ["Remove focus"])
+  system("remove-focus")
 end

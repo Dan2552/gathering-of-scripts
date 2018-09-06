@@ -13,6 +13,7 @@ def run
   kill
   system "clear" or system "cls"
   system "printf '\e[3J'"
+  system "reset"
   @running = Process.spawn("simple-rspec")
 end
 
