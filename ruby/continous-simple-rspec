@@ -19,7 +19,8 @@ end
 
 def kill
   return unless @running
-  system("kill -9 #{@running}")
+  system("kill #{@running}")
+  Process.wait
 end
 
 run

@@ -174,16 +174,26 @@ def find_debugger
   false
 end
 
+@running = nil
+
 if find_debugger
   puts "debugger found"
-  system("bundle exec rspec --fail-fast --color --format documentation")
+  begin
+    @running = Process.spawn("bundle exec rspec --fail-fast --color --format documentation")
+    Process.wait
+  rescue SignalException
+    system("kill -9 #{@running}")
+    exit
+  end
+
+  puts ""
+  response = Ask.list("Options", ["Remove pry"])
+  system("remove-pry")
   exit
 end
 
 printf("rspec... ")
 run = run_command("bundle exec rspec --fail-fast")
-
-# binding.pry
 
 focused = run.stdout.include?("include {:focus=>true}")
 
