@@ -26,7 +26,8 @@ end
 run
 
 listener = Listen.to(dir) do |modified, added, removed|
-  run
+  files = modified + added + removed
+  run if files.select { |s| s.end_with?(".rb") }.count > 0
 end
 
 begin
