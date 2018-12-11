@@ -19,7 +19,7 @@ cassettes.each do |path|
   yaml = YAML.load(text)
 
   yaml["http_interactions"].delete_if do |recording|
-    recording["request"]["uri"] == url
+    recording["request"]["uri"] == url && recording["request"]["method"] == method
   end
 
   text = yaml.to_yaml
