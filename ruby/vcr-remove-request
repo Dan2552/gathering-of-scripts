@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+
+method = ARGV[0]
+url = ARGV[1]
+
+if !method || !url
+  echo "Usage: vcr-remove-request [method] [url]"
+  exit 1
+end
+
+cassettes = Dir.glob('**/vcr_cassettes/**/*.yml')
+
+cassettes.each do |path|
+  puts path
+
+  text = File.read(path)
+  yaml = YAML.load(text)
+
+  yaml["http_interactions"].delete_if do |recording|
+    recording["request"]["uri"] == url
+  end
+
+  text = yaml.to_yaml
+
+  File.open(path, 'w') { |file| file.puts text }
+end
