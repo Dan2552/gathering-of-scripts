@@ -49,7 +49,7 @@ if was_successful; then
   successfully rm ./*/*/xcuserdata/`whoami`.xcuserdatad/UserInterfaceState.xcuserstate
 fi
 
-execute touch .hushlogin
+execute touch ~/.hushlogin
 
 echo "Current Wi-Fi: $(wifi)"
 
