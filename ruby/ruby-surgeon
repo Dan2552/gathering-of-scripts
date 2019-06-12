@@ -1,35 +1,95 @@
 #!/usr/bin/env ruby
 
+
+def execute(command, print_to_stdout: false)
+  require 'pty'
+  require 'io/console'
+
+  master, slave = PTY.open
+
+  # IO#raw! is usable to disable newline conversions
+  slave.raw!
+
+  output = ""
+  pid = ::Process.spawn({}, command, :in => STDIN, [:out, :err] => slave)
+  slave.close
+
+  master.each_char do |char|
+    STDOUT.print char if print_to_stdout
+    output.concat(char)
+  end
+
+  ::Process.wait(pid)
+  master.close
+
+  output
+end
+
+def fail!
+  puts "👩‍⚕️ 💥 failed"
+  puts $bundle_output
+  exit 1
+end
+
+def fail_but_try_again!
+  puts "👩‍⚕️ Try again 🤞"
+  exit 1
+end
+
 bundler_missing = `which bundle` == ""
 if bundler_missing
   `gem install bundler`
 end
 
-bundle_output = `bundle install`
+$bundle_output = execute("bundle install")
 
-bundler_missing = bundle_output.match /No such file or directory - bundle/
+bundler_missing = $bundle_output.match /No such file or directory - bundle/
 
-libv8 = bundle_output.match /An error occurred while installing libv8 \((.*)\)/
+libv8 = $bundle_output.match /An error occurred while installing libv8 \((.*)\)/
 if libv8
+  puts "👩‍⚕️ this is a known error... let's try"
   version = libv8[1]
   `brew install node`
   `gem install libv8 -v #{version} -- --with-system-v8`
 
-  exit 1
+  fail_but_try_again!
 end
 
-ruby_racer = bundle_output.match /An error occurred while installing therubyracer \((.*)\)/
+ruby_racer = $bundle_output.match /An error occurred while installing therubyracer \((.*)\)/
 if ruby_racer
+  puts "👩‍⚕️ this is a known error... let's try"
   version = ruby_racer[1]
   `gem uninstall libv8`
 
-  exit 1
+  fail_but_try_again!
 end
 
-nokogiri_xmlsec = bundle_output.match /An error occurred while installing nokogiri-xmlsec-instructure/
+nokogiri_xmlsec = $bundle_output.match /An error occurred while installing nokogiri-xmlsec-instructure/
 if nokogiri_xmlsec
+  puts "👩‍⚕️ this is a known error... let's try"
   `brew install libxmlsec1`
-  exit 1
+
+  fail_but_try_again!
 end
 
-puts "bundle install is fine 💃🕺"
+nokogiri = $bundle_output.match /An error occurred while installing nokogiri/
+if nokogiri
+  puts "👩‍⚕️ this is a known error... let's try"
+  execute("brew install libxml2")
+  execute("brew install libiconv")
+  $bundle_output = execute('gem install nokogiri -- --use-system-libraries --with-iconv-dir=$(brew --prefix libiconv) --with-xml2-include=$(brew --prefix libxml2)/include/libxml2')
+
+  puts "👩‍⚕️ if this doesn't work, try opening xcode - it may ask to install components"
+
+  if $?.exitstatus == 0
+    fail_but_try_again!
+  else
+    fail!
+  end
+end
+
+if $?.exitstatus == 0
+  puts "👩‍⚕️ bundle install is fine 💃🕺"
+else
+  fail!
+end
