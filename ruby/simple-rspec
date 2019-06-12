@@ -187,9 +187,12 @@ if find_debugger
   end
 
   puts ""
-  response = Ask.list("Options", ["Remove pry"])
-  system("remove-pry")
-  exit
+  response = Ask.list("Options", ["Do nothing", "Remove pry"])
+  if response == 1
+    system("remove-pry")
+    exit 0
+  end
+  exit 2
 end
 
 printf("rspec... ")
@@ -216,6 +219,10 @@ end
 
 if focused
   puts ""
-  response = Ask.list("Options", ["Remove focus"])
-  system("remove-focus")
+  response = Ask.list("Options", ["Do nothing", "Remove focus"])
+  if response == 1
+    system("remove-focus")
+    exit 0
+  end
+  exit 2
 end
