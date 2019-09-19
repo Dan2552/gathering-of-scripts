@@ -22,16 +22,30 @@ file_paths.each do |path|
   find_and_replace(path, ';binding.pry', '')
   find_and_replace(path, '; binding.pry', '')
   find_and_replace(path, 'binding.pry', '')
+  find_and_replace(path, /$\s*before { byebug }$/, '')
+  find_and_replace(path, /^\s*before { byebug }$/, '')
+  find_and_replace(path, /$\s*byebug$/, '')
+  find_and_replace(path, /^\s*byebug$/, '')
+  find_and_replace(path, /#\s*byebug/, '')
+  find_and_replace(path, 'byebug; ', '')
+  find_and_replace(path, 'byebug;', '')
+  find_and_replace(path, ';byebug', '')
+  find_and_replace(path, '; byebug', '')
+  find_and_replace(path, 'byebug', '')
 end
 
 file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.erb') }
 file_paths.each do |path|
   find_and_replace(path, /$\s*<%\s*binding.pry\s*%>$/, '')
   find_and_replace(path, '<%\s*binding.pry\s*%>', '')
+  find_and_replace(path, /$\s*<%\s*byebug\s*%>$/, '')
+  find_and_replace(path, '<%\s*byebug\s*%>', '')
 end
 
 file_paths = Dir.glob('**/*').select { |path| File.file?(path) && path.end_with?('.slim') }
 file_paths.each do |path|
   find_and_replace(path, /^\s*- binding.pry\n/, '')
   find_and_replace(path, /^\s*- binding.pry$/, '')
+  find_and_replace(path, /^\s*- byebug\n/, '')
+  find_and_replace(path, /^\s*- byebug$/, '')
 end
