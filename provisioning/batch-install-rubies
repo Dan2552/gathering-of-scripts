@@ -2,23 +2,27 @@
 
 # brew install rbenv/tap/openssl@1.0
 
+existing = `ls ~/.rubies`.chomp.split(/\s+/).map { |s| s.split("ruby-").last }.uniq
+
 files = Dir.glob(File.join(Dir.pwd, "**", ".ruby-version"))
 versions = files
   .map { |path| File.read(path).chomp.split("ruby-").last }
   .uniq
-  .map { |v| Gem::Version.new(v) }
 
-log = ""
+versions = versions - existing
 
 puts "installing versions: #{versions}"
 
+log = ""
+versions = versions.map { |v| Gem::Version.new(v) }
+
 versions.each do |version|
   if version < Gem::Version.new("2.4.0")
-    system("ruby-install ruby #{version} -- --with-openssl-dir=$(brew --prefix openssl@1.0) --disable-install-doc") || begin
+    system("ruby-install ruby #{version} -- --with-openssl-dir=$(brew --prefix openssl@1.0)") || begin
       log = log + "#{version} failed\n"
     end
   else
-    system("ruby-install ruby #{version} --disable-install-doc") || begin
+    system("ruby-install ruby #{version}") || begin
       log = log + "#{version} failed\n"
     end
   end
