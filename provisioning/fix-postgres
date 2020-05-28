@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+brew uninstall postgresql
+rm -rf /usr/local/var/postgres
+brew install postgresql
+initdb /usr/local/var/postgres -E utf8
