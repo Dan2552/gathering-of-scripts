@@ -55,6 +55,15 @@ if libv8
   fail_but_try_again!
 end
 
+puma = $bundle_output.match /An error occurred while installing puma \((.*)\)/
+if puma
+  puts "👩‍⚕️ this is a known error... let's try"
+  version = puma[1]
+  `gem install puma -v #{version} -- --with-cflags="-Wno-error=implicit-function-declaration"`
+
+  fail_but_try_again!
+end
+
 ruby_racer = $bundle_output.match /An error occurred while installing therubyracer \((.*)\)/
 if ruby_racer
   puts "👩‍⚕️ this is a known error... let's try"
