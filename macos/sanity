@@ -15,15 +15,6 @@ execute git config --global push.default "current"
 execute chmod 600 ~/.ssh/*
 execute chmod 644 ~/.ssh/known_hosts
 
-execute defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
-
-# Disable press-and-hold for keys in favor of key repeat
-execute defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-
-# Set a blazingly fast keyboard repeat rate
-execute defaults write NSGlobalDomain KeyRepeat -int 2
-execute defaults write NSGlobalDomain InitialKeyRepeat -int 10
-
 mkdir ~/Library/KeyBindings/ 2>/dev/null
 rm ~/Library/KeyBindings/DefaultKeyBinding.dict 2>/dev/null
 touch ~/Library/KeyBindings/DefaultKeyBinding.dict
@@ -31,8 +22,6 @@ echo '{
 "~ " = ("insertText:", " ");
 }' >> ~/Library/KeyBindings/DefaultKeyBinding.dict
 check_last "Disable weird alt+space thing"
-
-execute ssh-add -A
 
 ls .bundle/config >/dev/null 2>&1
 if was_successful; then
@@ -50,8 +39,3 @@ if was_successful; then
 fi
 
 execute touch ~/.hushlogin
-
-echo "Current Wi-Fi: $(wifi)"
-
-#TODO add this in:
-# https://www.quernus.co.uk/2015/10/22/force-git-to-use-ssh/
