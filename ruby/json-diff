@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'bundler/inline'
+gemfile do
+  source 'https://rubygems.org'
+  gem 'json-compare'
+  gem 'pry'
+  gem 'deepsort'
+end
+
+require 'json'
+require 'json-compare'
+require 'deepsort'
+
+dir = __dir__
+json1 = File.read(File.join(dir, ARGV[0]))
+json2 = File.read(File.join(dir, ARGV[1]))
+old, new = JSON.parse(json1).deep_sort, JSON.parse(json2).deep_sort
+puts result = JsonCompare.get_diff(old, new)
+
