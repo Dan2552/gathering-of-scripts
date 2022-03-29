@@ -2,6 +2,15 @@
 set -e
 
 brew uninstall postgresql
-rm -rf /usr/local/var/postgres
+
+if [[ -d /usr/local/var/postgres ]]; then
+  rm -rf /usr/local/var/postgres
+  initdb /usr/local/var/postgres -E utf8
+fi
+
+if [[ -d /opt/homebrew/var/postgres ]]; then
+  rm -rf /opt/homebrew/var/postgres
+  initdb /opt/homebrew/var/postgres -E utf8
+fi
+
 brew install postgresql
-initdb /usr/local/var/postgres -E utf8

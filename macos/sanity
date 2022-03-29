@@ -2,26 +2,23 @@
 
 source common-functions
 
-if [[ $1 != "--no-interaction" ]]; then
-  check_sudo
+if [[ `uname`.chomp == "Darwin" ]]; then
+  execute git config --global credential.helper "osxkeychain"
 
-  execute sudo mkdir -p /Library/Caches/Homebrew
-  execute sudo chown -R `whoami` /Library/Caches/Homebrew
+  mkdir ~/Library/KeyBindings/ 2>/dev/null
+  rm ~/Library/KeyBindings/DefaultKeyBinding.dict 2>/dev/null
+  touch ~/Library/KeyBindings/DefaultKeyBinding.dict
+  echo '{
+  "~ " = ("insertText:", " ");
+  }' >> ~/Library/KeyBindings/DefaultKeyBinding.dict
+  check_last "Disable weird alt+space thing"
 fi
 
-execute git config --global credential.helper "osxkeychain"
 execute git config --global push.default "current"
 
 execute chmod 600 ~/.ssh/*
 execute chmod 644 ~/.ssh/known_hosts
-
-mkdir ~/Library/KeyBindings/ 2>/dev/null
-rm ~/Library/KeyBindings/DefaultKeyBinding.dict 2>/dev/null
-touch ~/Library/KeyBindings/DefaultKeyBinding.dict
-echo '{
-"~ " = ("insertText:", " ");
-}' >> ~/Library/KeyBindings/DefaultKeyBinding.dict
-check_last "Disable weird alt+space thing"
+execute chmod 600 ~/.kube/config
 
 ls .bundle/config >/dev/null 2>&1
 if was_successful; then
@@ -37,5 +34,3 @@ ls ./*/*/xcuserdata/`whoami`.xcuserdatad/UserInterfaceState.xcuserstate >/dev/nu
 if was_successful; then
   successfully rm ./*/*/xcuserdata/`whoami`.xcuserdatad/UserInterfaceState.xcuserstate
 fi
-
-execute touch ~/.hushlogin

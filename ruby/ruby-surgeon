@@ -97,6 +97,21 @@ if nokogiri
   end
 end
 
+ffi = $bundle_output.match /An error occurred while installing ffi \((.*)\)/
+if ffi
+  puts "👩‍⚕️ this is a known error... let's try"
+  version = ffi[1]
+
+  system("bundle config build.ffi --with-cflags=\"-Wno-error=implicit-function-declaration\"")
+
+  system({
+    "LDFLAGS" => "-L/usr/local/opt/libffi/lib",
+    "PKG_CONFIG_PATH" => "/usr/local/opt/libffi/lib/pkgconfig"
+    },
+    "gem install ffi -v #{version}"
+  )
+end
+
 if $?.exitstatus == 0
   puts "👩‍⚕️ bundle install is fine 💃🕺"
 else

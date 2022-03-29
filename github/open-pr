@@ -1,5 +1,13 @@
 #!/usr/bin/env ruby
-target_branch = ARGV[0] || "develop"
+
+def default_branch
+  branch = `basename $(git symbolic-ref refs/remotes/origin/HEAD)`.chomp
+  branch = "master" if branch.nil?
+  branch = "master" if branch == ""
+  branch
+end
+
+target_branch = ARGV[0] || default_branch
 
 url = `git config --get remote.origin.url`.strip
 url.gsub!("git@", "https://")
