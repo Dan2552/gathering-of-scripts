@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-brew uninstall postgresql
+brew uninstall postgresql || echo ""
 
 if [[ -d /usr/local/var/postgres ]]; then
   rm -rf /usr/local/var/postgres
+  brew install postgresql
   initdb /usr/local/var/postgres -E utf8
+else
+  if [[ -d /opt/homebrew/var/postgres ]]; then
+    rm -rf /opt/homebrew/var/postgres
+    brew install postgresql
+    initdb /opt/homebrew/var/postgres -E utf8
+  else
+    echo "No postgres found. Try: brew install postgresql"
+  fi
 fi
 
-if [[ -d /opt/homebrew/var/postgres ]]; then
-  rm -rf /opt/homebrew/var/postgres
-  initdb /opt/homebrew/var/postgres -E utf8
-fi
-
-brew install postgresql
