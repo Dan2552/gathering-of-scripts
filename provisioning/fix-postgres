@@ -3,20 +3,18 @@ set -e
 
 brew services stop postgresql@14 || echo ""
 brew uninstall postgresql || echo ""
+brew uninstall postgresql@14 || echo ""
 
-if [[ -d /usr/local/var/postgres ]]; then
+if [[ -d /opt/homebrew ]]; then
+  rm -rf /opt/homebrew/var/postgres
+  brew install postgresql@14
+  initdb /opt/homebrew/var/postgres -E utf8
+else
   rm -rf /usr/local/var/postgres
   brew install postgresql@14
   initdb /usr/local/var/postgres -E utf8
-else
-  if [[ -d /opt/homebrew/var/postgres ]]; then
-    rm -rf /opt/homebrew/var/postgres
-    brew install postgresql@14
-    initdb /opt/homebrew/var/postgres -E utf8
-  else
-    echo "No postgres found. Try: brew install postgresql"
-    exit 1
-  fi
 fi
+
+if [[ -d /usr/local/var/postgres ]]; then
 
 brew services start postgresql@14
