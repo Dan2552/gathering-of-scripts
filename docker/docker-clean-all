@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker system prune -a
+
 # Stop all
 docker kill $(docker ps -q) 2>/dev/null
 
