@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 url = `git config --get remote.origin.url`.strip
+
+url.gsub!(/.*@/, "")
 url.gsub!("git@", "https://")
 url.gsub!(":", "/")
 url.gsub!(".git", "")
@@ -8,5 +10,5 @@ url.gsub!("https///", "https://")
 url = "#{url}/pulls"
 
 url = "https://github.com/pulls" if url == "/pulls"
-
+url = "https://#{url}" unless url.start_with?("http")
 `open #{url}`
